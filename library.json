@@ -1,0 +1,22 @@
+{
+  "name": "SHISDS1306OLED",
+  "description": "An implementation of SDS1306OLED for SHIT",
+  "keywords": [
+    "SmartHome"
+  ],
+  "authors": [
+    {
+      "name": "Karsten Becker",
+      "email": "kb@shi.technology",
+      "url": "https://shi.technology",
+      "maintainer": true
+    }
+  ],
+  "version": "0.2.1",
+  "frameworks": "arduino",
+  "platforms": "espressif32",
+  "dependencies": {
+    "Wire": "1.0.1",
+    "SmartHomeIntegrationTech": ">=0.2.1"
+  }
+}
