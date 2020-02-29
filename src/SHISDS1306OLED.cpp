@@ -3,12 +3,11 @@
  * Use of this source code is governed by a BSD-style
  * license that can be found in the LICENSE file.
  */
-#include "SHIOLEDDisplay.h"
-
 #include <Arduino.h>
 #include <oled/SSD1306Wire.h>
 
 #include "SHIHardware.h"
+#include "SHISDS1306OLED.h"
 
 namespace {
 SSD1306Wire display =
@@ -16,7 +15,7 @@ SSD1306Wire display =
 bool displayUpdated = false;
 }  // namespace
 
-void SHI::OLEDDisplay::setupCommunication() {
+void SHI::SHISDS1306OLED::setupCommunication() {
   display.init();
   display.flipScreenVertically();
   display.setFont(ArialMT_Plain_10);
@@ -26,7 +25,7 @@ void SHI::OLEDDisplay::setupCommunication() {
   SHI::hw->feedWatchdog();
 }
 
-void SHI::OLEDDisplay::loopCommunication() {
+void SHI::SHISDS1306OLED::loopCommunication() {
   if (displayUpdated) {
     displayUpdated = false;
     display.clear();
@@ -39,7 +38,7 @@ void SHI::OLEDDisplay::loopCommunication() {
   }
 }
 
-void SHI::OLEDDisplay::newReading(const SHI::MeasurementBundle &reading) {
+void SHI::SHISDS1306OLED::newReading(const SHI::MeasurementBundle &reading) {
   const std::string baseName = reading.src->getName();
   for (auto &&data : reading.data) {
     auto sensorName = baseName + data.getMetaData()->getName();
@@ -52,13 +51,13 @@ void SHI::OLEDDisplay::newReading(const SHI::MeasurementBundle &reading) {
   }
 }
 
-void SHI::OLEDDisplay::newStatus(const Measurement &status, SHIObject *src) {
+void SHI::SHISDS1306OLED::newStatus(const Measurement &status, SHIObject *src) {
   if (status.stringRepresentation != STATUS_OK) {
     displayLineBuf[6] = String(status.stringRepresentation.c_str());
     displayUpdated = true;
   }
 }
 
-void SHI::OLEDDisplay::setBrightness(uint8_t level) {
+void SHI::SHISDS1306OLED::setBrightness(uint8_t level) {
   display.setBrightness(level);
 }

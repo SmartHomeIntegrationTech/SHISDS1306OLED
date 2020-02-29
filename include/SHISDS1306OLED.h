@@ -24,12 +24,12 @@
 
 namespace SHI {
 
-class OLEDDisplay : public Communicator {
+class SHISDS1306OLED : public Communicator {
  public:
-  OLEDDisplay(std::pair<std::string, String> firstRow = {"", ""},
-              std::pair<std::string, String> secondRow = {"", ""},
-              std::pair<std::string, String> thirdRow = {"", ""})
-      : Communicator("OLEDDisplay") {
+  SHISDS1306OLED(std::pair<std::string, String> firstRow = {"", ""},
+                 std::pair<std::string, String> secondRow = {"", ""},
+                 std::pair<std::string, String> thirdRow = {"", ""})
+      : Communicator("SHISDS1306OLED") {
     displayItems.insert({firstRow.first, 0});
     displayItems.insert({secondRow.first, 1});
     displayItems.insert({thirdRow.first, 2});
