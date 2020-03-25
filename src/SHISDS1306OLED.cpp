@@ -20,8 +20,7 @@ void SHI::SDS1306OLED::setupCommunication() {
   display.init();
   display.flipScreenVertically();
   display.setFont(ArialMT_Plain_10);
-  display.drawString(0, 0, "OLED initial done!");
-  display.setBrightness(5);
+  reconfigure();
   display.display();
   SHI::hw->feedWatchdog();
 }
@@ -40,9 +39,29 @@ void SHI::SDS1306OLED::loopCommunication() {
 }
 
 void SHI::SDS1306OLED::newReading(const SHI::MeasurementBundle &reading) {
+  static int lastBrightness = -1;
   const std::string baseName = reading.src->getName();
   for (auto &&data : reading.data) {
     auto sensorName = baseName + data.getMetaData()->getName();
+    if (sensorName == "APDS9960Luminosity") {
+      int value = data.getFloatValue();
+      int newBrightness = 0;
+      if (value > 500) {
+        newBrightness = 10;
+      } else if (value > 250) {
+        newBrightness = 5;
+      } else if (value > 100) {
+        newBrightness = 2;
+      } else {
+        newBrightness = 0;
+      }
+      if (newBrightness != lastBrightness) {
+        display.setBrightness(newBrightness);
+        SHI_LOGINFO(std::string("Auto adjust brightness to ") +
+                    String(newBrightness).c_str());
+      }
+      lastBrightness = newBrightness;
+    }
     auto value = displayItems.find(sensorName);
     if (value != displayItems.end()) {
       displayLineBuf[(value->second * 2) + 1] =
@@ -61,4 +80,17 @@ void SHI::SDS1306OLED::newStatus(const Measurement &status, SHIObject *src) {
 
 void SHI::SDS1306OLED::setBrightness(uint8_t level) {
   display.setBrightness(level);
+}
+
+bool SHI::SDS1306OLED::reconfigure() {
+  display.drawString(0, 0, String(config.bootUpText.c_str()));
+  display.setBrightness(config.defaultBrightness);
+  displayItems.clear();
+  displayItems.insert({config.firstRowName, 0});
+  displayItems.insert({config.secondRowName, 1});
+  displayItems.insert({config.thirdRowName, 2});
+  displayLineBuf[0] = String(config.firstRowUnit.c_str());
+  displayLineBuf[2] = String(config.secondRowUnit.c_str());
+  displayLineBuf[4] = String(config.thirdRowUnit.c_str());
+  return true;
 }

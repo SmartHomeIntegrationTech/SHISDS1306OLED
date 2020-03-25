@@ -24,26 +24,54 @@
 
 namespace SHI {
 
+class SDS1306OLEDConfig : public Configuration {
+ public:
+  SDS1306OLEDConfig() {}
+  explicit SDS1306OLEDConfig(const JsonObject &obj);
+  std::string firstRowName = "";
+  std::string firstRowUnit = "";
+  std::string secondRowName = "";
+  std::string secondRowUnit = "";
+  std::string thirdRowName = "";
+  std::string thirdRowUnit = "";
+  std::string bootUpText = "OLED initial done!";
+  int defaultBrightness = 5;
+  void fillData(
+      JsonObject &obj) const override;  // NOLINT Yes, non constant reference
+ protected:
+  int getExpectedCapacity() const override;
+};
+
 class SDS1306OLED : public Communicator {
  public:
-  SDS1306OLED(std::pair<std::string, String> firstRow = {"", ""},
-              std::pair<std::string, String> secondRow = {"", ""},
-              std::pair<std::string, String> thirdRow = {"", ""})
+  SDS1306OLED(std::pair<std::string, std::string> firstRow = {"", ""},
+              std::pair<std::string, std::string> secondRow = {"", ""},
+              std::pair<std::string, std::string> thirdRow = {"", ""})
       : Communicator("SDS1306OLED") {
-    displayItems.insert({firstRow.first, 0});
-    displayItems.insert({secondRow.first, 1});
-    displayItems.insert({thirdRow.first, 2});
-    displayLineBuf[0] = firstRow.second;
-    displayLineBuf[2] = secondRow.second;
-    displayLineBuf[4] = thirdRow.second;
+    config.firstRowName = firstRow.first;
+    config.firstRowUnit = firstRow.second;
+    config.secondRowName = secondRow.first;
+    config.secondRowUnit = secondRow.second;
+    config.thirdRowName = thirdRow.first;
+    config.thirdRowUnit = thirdRow.second;
   }
+  explicit SDS1306OLED(const SDS1306OLEDConfig &config)
+      : Communicator("SDS1306OLED"), config(config) {}
   void setupCommunication() override;
   void loopCommunication() override;
   void newReading(const MeasurementBundle &reading) override;
   void newStatus(const Measurement &status, SHIObject *src) override;
   void setBrightness(uint8_t level);
 
+  const Configuration *getConfig() const { return &config; }
+  bool reconfigure(Configuration *newConfig) {
+    config = castConfig<SDS1306OLEDConfig>(newConfig);
+    return reconfigure();
+  }
+  SDS1306OLEDConfig config;
+
  private:
+  bool reconfigure();
   std::unordered_map<std::string, int> displayItems;
   String displayLineBuf[7] = {"", "", "", "", "", "", ""};
 };
