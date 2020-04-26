@@ -10,11 +10,7 @@
 
 #include "SHIHardware.h"
 
-namespace {
-SSD1306Wire display =
-    SSD1306Wire(0x3c, SDA_OLED, SCL_OLED, RST_OLED, GEOMETRY_128_64);
-bool displayUpdated = false;
-}  // namespace
+namespace {}  // namespace
 
 void SHI::SDS1306OLED::setupCommunication() {
   display.init();
@@ -83,6 +79,8 @@ void SHI::SDS1306OLED::setBrightness(uint8_t level) {
 }
 
 bool SHI::SDS1306OLED::reconfigure() {
+  display.setup(0x3c, config.sdaOLED, config.sclOLED, config.rstOLED,
+                GEOMETRY_128_64);
   display.drawString(0, 0, String(config.bootUpText.c_str()));
   display.setBrightness(config.defaultBrightness);
   displayItems.clear();

@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "SHICommunicator.h"
+#include "oled/SSD1306Wire.h"
 
 // namespace std {
 // template <>
@@ -35,6 +36,9 @@ class SDS1306OLEDConfig : public Configuration {
   std::string thirdRowName = "";
   std::string thirdRowUnit = "";
   std::string bootUpText = "OLED initial done!";
+  uint8_t rstOLED = 16;
+  uint8_t sclOLED = 15;
+  uint8_t sdaOLED = 4;
   int defaultBrightness = 5;
   void fillData(
       JsonObject &obj) const override;  // NOLINT Yes, non constant reference
@@ -74,6 +78,8 @@ class SDS1306OLED : public Communicator {
   bool reconfigure();
   std::unordered_map<std::string, int> displayItems;
   String displayLineBuf[7] = {"", "", "", "", "", "", ""};
+  SSD1306Wire display;
+  bool displayUpdated = false;
 };
 
 }  // namespace SHI
