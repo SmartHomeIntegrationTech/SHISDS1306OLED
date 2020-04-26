@@ -28,7 +28,7 @@
  *
  */
 
-#include "OLEDDisplayUi.h"
+#include "oled/OLEDDisplayUi.h"
 
 OLEDDisplayUi::OLEDDisplayUi(OLEDDisplay *display) {
   this->display = display;

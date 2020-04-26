@@ -28,7 +28,7 @@
  *
  */
 
-#include "OLEDDisplay.h"
+#include "oled/OLEDDisplay.h"
 
 OLEDDisplay::~OLEDDisplay() {
   end();
